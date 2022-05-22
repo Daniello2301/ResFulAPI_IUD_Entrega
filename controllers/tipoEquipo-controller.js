@@ -25,9 +25,6 @@ const getAll = async(req, res) => {
 
 }
 
-
-
-
 /* ******************************************************************************************************** */
 // GET tipo por Id
 const getById = async(req, res) => {
@@ -57,12 +54,11 @@ const getUsersActive = async(req, res) => {
 
     try {
 
+        console.log("GET/tiposactivos")
         const query = { estado : "Activo"}
         let response = await TipoEquipo.find(query).populate({
             path: 'usuario',
-            match: {
-                estado: 'Activo'
-            }
+            select: 'nombre email estado'
         });
         
         response = response.filter( (t) => t.usuario != null);

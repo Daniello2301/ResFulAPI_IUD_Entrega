@@ -11,7 +11,12 @@ const getAll = async(req, res) => {
     try 
     {
         console.log("GET/marcas")
-        const response = await Marca.find({});
+        const response = await Marca.find({}).populate(
+            {
+                path: 'usuario',
+                select: 'nombre email estado'
+            }
+        );
 
         console.log(response);
         res.status(200).json(response);
@@ -22,6 +27,27 @@ const getAll = async(req, res) => {
         res.status(500).json({mjs: error})
     }
 };
+
+/* ********************************************************************************************* */
+const getStateActive = async( req, res ) => {
+    try 
+    {
+    console.log("GET/marcasactivo")
+    
+    const response = await Marca.find({ estado: 'Activo' }).populate(
+        {
+            path: 'usuario',
+            select: 'nombre email estado'
+        }
+    );
+
+    res.status(200).json(response)
+    } catch (error) {
+        
+        console.log("Error ", error)
+        res.status(500).json({mjs: error})
+    }
+}
 
 
 /* ********************************************************************************************* */
@@ -126,13 +152,13 @@ const update = async(req, res) => {
         }
 
         // validamos de igual forma que ell usuario ingresado existe 
-        const usuarioDB = await Usuario.findOne({ email: usuario.email});
+        const usuarioDB = await Usuario.findOne({ email: usuario.email });
         if(!usuarioDB){ return res.status(404).json({mjs: "El usuario no existe"})};
         
 
         marca.nombre = nombre.toUpperCase();
         marca.estado = estado;
-        marca.usaurio = usuarioDB._id;
+        marca.usuario = usuarioDB._id;
 
         marca = await marca.save();
 
@@ -179,4 +205,4 @@ const deleteById = async(req, res) => {
         res.status(500).json({mjs: error})
     }
 }
-module.exports = {getAll, getById, create, update, deleteById }
+module.exports = {getAll, getById, create, update, deleteById, getStateActive }

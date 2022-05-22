@@ -12,7 +12,12 @@ const getAll = async(req, res) => {
     try 
     {
         console.log("GET/estadosequipos")
-        const response = await EstadoEquipo.find({});
+        const response = await EstadoEquipo.find({}).populate(
+            {
+                path:'usuario',
+                select: 'nombre email estado'
+            }
+        );
 
         console.log(response);
         res.status(200).json(response);
@@ -25,6 +30,30 @@ const getAll = async(req, res) => {
 };
 
 
+
+
+
+/* ******************************************************************************************** */
+// istar estado activos
+const getStateActive = async( req, res ) => {
+    try 
+    {
+    console.log("GET/estadoActivo")
+    
+    const response = await EstadoEquipo.find({ estado: 'Activo' }).populate(
+        {
+            path: 'usuario',
+            select: 'nombre email estado'
+        }
+    );
+
+    res.status(200).json(response)
+    } catch (error) {
+        
+        console.log("Error ", error)
+        res.status(500).json({mjs: error})
+    }
+}
 /* ********************************************************************************************* */
 // Listar estado por Id
 const getById = async(req, res) => {
@@ -118,7 +147,7 @@ const update = async(req, res) => {
         }
 
         // Declaramos la informacion a actualizar
-         const {nombre, estado, usuario } = req.body;
+         const {nombre, estado} = req.body;
 
         // Validamons que el estado que este actualizando no exista
         const estadoExiste = await EstadoEquipo.findOne({nombre: nombre, _id: {$ne: id}});
@@ -127,13 +156,13 @@ const update = async(req, res) => {
         }
 
         // validamos de igual forma que ell usuario ingresado existe 
-        const usuarioDB = await Usuario.findOne({ email: usuario.email});
+        const usuarioDB = await Usuario.findOne({ email: req.body.usuario.email });
         if(!usuarioDB){ return res.status(404).json({mjs: "El usuario no existe"})};
         
 
         estadoEquipo.nombre = nombre.toUpperCase();
         estadoEquipo.estado = estado;
-        estadoEquipo.usaurio = usuarioDB._id;
+        estadoEquipo.usuario = usuarioDB._id;
 
         estadoEquipo = await estadoEquipo.save();
 
@@ -180,4 +209,4 @@ const deleteById = async(req, res) => {
         res.status(500).json({mjs: error})
     }
 }
-module.exports = {getAll, getById, create, update, deleteById }
+module.exports = {getAll, getById, create, update, deleteById, getStateActive }

@@ -3,17 +3,17 @@ const router = require('express').Router();
 const tipoController = require('../controllers/tipoEquipo-controller');
 
 
-router.route('/tiposequipo')
+router.route('/tipos')
     .get(tipoController.getAll)
     .post(tipoController.create);
 
-router.route('/tiposequipo/:id')
+router.route('/tipos/:id')
     .get(tipoController.getById)
     .patch(tipoController.update)
     .put(tipoController.update)
     .delete(tipoController.deleteById);
 
-router.route('/tiposequipo-usauriosactivos')
+router.route('/tipos-activos')
     .get(tipoController.getUsersActive);
 
 

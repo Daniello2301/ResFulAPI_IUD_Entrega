@@ -13,7 +13,7 @@ router.route('/usuarios/:id')
     .put(usuarioController.update)
     .delete(usuarioController.deleteById);
 
-router.route('/usuariosActivos')
+router.route('/usuarios-activos')
     .get(usuarioController.getByActiveUser);
 
 module.exports = router;

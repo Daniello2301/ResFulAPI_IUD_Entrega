@@ -71,37 +71,31 @@ const getStateActive = async ( req, res ) => {
     {
         console.log("GET/inventarios-activestate")
 
-        const { id } = req.params;
-        const query = { _id: id }
-        const response = await Inventario.findById(query).populate(
+        const response = await Inventario.find({estado: 'Activo'}).populate([
             {
                 path: 'usuario',
-                select: 'nombre email estado', 
-                match: { estado: 'Activo'}
+                select: 'nombre email estado'
             },
             {
                 path: 'marca',
-                select: 'nombre estado', 
-                match: { estado: 'Activo' }
+                select: 'nombre estado'
             },
             {
                 path: 'estadoEquipo',
-                select: 'nombre estado', 
-                match: { estado: 'Activo' }
+                select: 'nombre estado'
             },
             {
                 path: 'tipoEquipo',
-                select: 'nombre estado', 
-                match: { estado: 'Activo' }
+                select: 'nombre estado'
             }
-        );
+        ]);
 
         console.log(response);
         res.status(200).json(response)
     } catch (error) {
         
         console.log("Error ", error)
-        res.status(404).send(err.message);
+        res.status(404).send(error.message);
     }
 };
 
@@ -131,8 +125,8 @@ const create = async ( req, res ) => {
         let inventario = await Inventario.findOne({serial : serial});
         if(inventario) return res.status(500).json({ mjs: "El serial ya existe" });
 
-        const usaurioDB = await Usuario.findOne({ email });
-        if(!usaurioDB) { return res.status(500).json({ mjs: "El usuario no existe" }); }
+        const usuarioDB = await Usuario.findOne({ email: email});
+        if(!usuarioDB) { return res.status(500).json({ mjs: "El usuario no existe" }); }
 
         const marcaDB = await Marca.findOne({ nombre : marca });
         if(!marcaDB) { return res.status(500).json({ mjs: "La Marca no existe" }); }
@@ -146,7 +140,7 @@ const create = async ( req, res ) => {
 
         const data = { 
         serial, modelo, descripcion, foto, color, fechaCompra, precio, estado,
-        usuario: usaurioDB._id,
+        usuario: usuarioDB._id,
         marca: marcaDB._id,
         estadoEquipo: estadoEquipoDB._id,
         tipoEquipo: tipoEquipoDB._id
@@ -162,7 +156,7 @@ const create = async ( req, res ) => {
     } catch (error) {
         
         console.log("Error ", error)
-        res.status(404).send(err.message);
+        res.status(404).send(error.message);
     }
 }; 
 
@@ -174,17 +168,74 @@ const update = async ( req , res ) => {
 
         const { id } = req.params;
 
-        let inventario = await Inventario.find({_id: id});
+        let inventario = await Inventario.findById({_id: id});
         if(!inventario){return res.status(404).json({mjs: "Not foun inventario"})}
 
-        const {serial, ...data} = req.body
-    } catch (error) {
+        const {serial, modelo, descripcion, foto, color, fechaCompra,
+            precio, estado, usuario, marca, estadoEquipo, tipoEquipo } = req.body
+
         
+        const inventarioExiste = await Inventario.findOne({serial: serial, _id: {$ne: id}});
+         if(inventarioExiste){ return res.status(500).json({mjs: "El iventario existe"})}
+
+        
+        const usuarioDB = await Usuario.findOne({ email : usuario.email});
+        if(!usuarioDB) { return res.status(404).json({mjs: "El usuario no existe"})}
+
+        const marcaDB = await Marca.findOne({nombre: marca.nombre.toUpperCase()});
+        if(!marcaDB) { return res.status(404).json({mjs: "La marca no existe"})}
+
+        const estadoDB = await EstadoEquipo.findOne({nombre: estadoEquipo.nombre.toUpperCase()});
+        if(!estadoDB) { return res.status(404).json({mjs: "El estado de equipo no existe"})}
+
+        const tipoDB = await TipoEquipo.findOne({nombre: tipoEquipo.nombre.toUpperCase()});
+        if(!tipoDB) { return res.status(404).json({mjs: "El Tipo de equipo no existe"})}
+
+    
+        inventario.serial = serial;
+        inventario.modelo = modelo;
+        inventario.descripcion = descripcion;
+        inventario.foto = foto;
+        inventario.color = color;
+        inventario.fechaCompra = fechaCompra;
+        inventario.precio = precio;
+        inventario.estado = estado;
+        inventario.usuario = usuarioDB._id;
+        inventario.marca = marcaDB._id;
+        inventario.estadoEquipo = estadoDB._id;
+        inventario.tipoEquipo = tipoDB._id;
+
+        inventario = await inventario.save();
+
+        console.log(inventario);
+        res.status(202).json(inventario);
+
+    } catch (error) {
+        console.log("Error ", error)
+        res.status(500).json({msj: error})
     }
 };
 
 const deleteById = async( req, res) =>{
 
+    try {
+        
+        console.log("DELETE/inventario",req.params.id);
+        const { id } = req.params;
+
+        const inventarioExiste = await Inventario.findById({_id: id});
+        if(!inventarioExiste){
+            return res.status(404).json({ mjs: "El inventario que desea eliminar no existe" });
+        }
+
+        const response = await inventarioExiste.remove();
+
+        res.status(200).json(response);
+    } catch (error) {
+        
+        console.log("Error ", error)
+        res.status(500).json({mjs: error})
+    }
 }
 
 module.exports = {getAll, getById, getStateActive, create, update, deleteById}

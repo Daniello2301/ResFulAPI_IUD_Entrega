@@ -17,4 +17,8 @@ router.route('/marcas/:id')
     .put(marcaController.update)
     .delete(marcaController.deleteById);
 
+
+router.route('/marcas-activos')
+    .get(marcaController.getStateActive);
+
 module.exports = router;
