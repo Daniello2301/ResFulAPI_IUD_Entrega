@@ -4,17 +4,17 @@ const EstadoEquipoSchema = mongoose.Schema({
 
     nombre:{
         type: String,
-        require : true
+        require : [true, 'El Nombre Requerido']
     },
     estado:{
         type: String,
-        require: true,
+        require: [true, "El estado es requerido ( 'Activo' o 'Inactivo' ) "],
         enum:['Activo', 'Inactivo']
     },
     usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Usuario',
-        require: true
+        require: [true, "El usuario es requerido"]
     }
 },
 {

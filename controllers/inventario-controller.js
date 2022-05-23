@@ -4,6 +4,7 @@ const EstadoEquipo = require('../models/EstadoEquipo');
 const TipoEquipo = require('../models/TipoEquipo');
 const Usuario = require('../models/Usuario');
 
+const { validarInventario }  = require('../helpers/inventario-validate')
 
 
 // listar todos los inventarios
@@ -36,7 +37,7 @@ const getAll = async( req, res ) => {
         
         
         console.log("Error ", error)
-        res.status(404).send(err.message);
+        res.status(404).json({msj: error.message}).send("Ocurrió un error")
     }
 };
 
@@ -61,7 +62,7 @@ const getById = async( req, res ) => {
     } catch (error) {
         
         console.log("Error ", error)
-        res.status(404).send(err.message);
+        res.status(404).json({msj: error.message}).send("Ocurrió un error")
     }
 };
 
@@ -95,7 +96,7 @@ const getStateActive = async ( req, res ) => {
     } catch (error) {
         
         console.log("Error ", error)
-        res.status(404).send(error.message);
+        res.status(404).json({msj: error.message}).send("Ocurrió un error")
     }
 };
 
@@ -106,8 +107,15 @@ const create = async ( req, res ) => {
         console.log("POST/inventarios")
         console.log(req.body)
         
-        /* const { modelo, descricion, foto, color, fechaCompra, precio,
-                estado } = req.body */
+
+        // Validaciones 
+        const validaciones = validarInventario(req);
+
+        if(validaciones.length > 0){
+            return res.status(500).send(validaciones);
+        }
+
+        // Request
         const serial = req.body.serial;
         const modelo = req.body.descricion;
         const descripcion = req.body.descripcion;
@@ -156,7 +164,7 @@ const create = async ( req, res ) => {
     } catch (error) {
         
         console.log("Error ", error)
-        res.status(404).send(error.message);
+        res.status(404).json({msj: error.message}).send("Ocurrió un error")
     }
 }; 
 
@@ -164,6 +172,13 @@ const update = async ( req , res ) => {
 
     try 
     {
+        // Validaciones 
+        const validaciones = validarInventario(req);
+
+        if(validaciones.length > 0){
+            return res.status(500).send(validaciones);
+        }
+        
         console.log("PUT/inventarios/",req.params.id)
 
         const { id } = req.params;
@@ -212,7 +227,7 @@ const update = async ( req , res ) => {
 
     } catch (error) {
         console.log("Error ", error)
-        res.status(500).json({msj: error})
+        res.status(500).json({msj: error.message}).send("Ocurrió un error", error.message)
     }
 };
 
@@ -234,7 +249,7 @@ const deleteById = async( req, res) =>{
     } catch (error) {
         
         console.log("Error ", error)
-        res.status(500).json({mjs: error})
+        res.status(500).json({mjs: error.message}).send("Ocurrió un error", error.message);
     }
 }
 
