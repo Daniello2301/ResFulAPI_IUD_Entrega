@@ -85,7 +85,7 @@ const create = async(req, res) => {
 };
 
 
-//Metodo actualizar 
+//Metodo actualizar Usaurio
 const update = async(req, res) => {
     
     try 
