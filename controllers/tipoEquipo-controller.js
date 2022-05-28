@@ -18,9 +18,9 @@ const getAll = async(req, res) => {
         console.log("GET/tiposequipos");
         res.status(200).send(response);
 
-    } catch (err) {
+    } catch (error) {
         console.log("Error ", err)
-        res.status(404).send(err.message);
+        res.status(404).json({msj: error.message}).send("Ocurrió un error")
     }
 
 }
@@ -42,7 +42,7 @@ const getById = async(req, res) => {
     } catch (error) {
         
         console.log(error)
-        res.status(500).json({msj: error})
+        res.status(500).json({msj: error.message}).send("Ocurrió un error")
     }
 }
 
@@ -67,7 +67,7 @@ const getUsersActive = async(req, res) => {
         res.status(201).json(response);
     } catch (error) {
         console.log("Error", error)
-        res.status(500).json({msj: error});
+        res.status(500).json({msj: error.message}).send("Ocurrió un error")
     }
 
 }
@@ -106,7 +106,7 @@ const create = async(req, res) => {
         res.status(201).json(tipoEquipoSave);
     } catch (error) {
         console.log("Error", error)
-        res.status(500).json({msj: error})
+        res.status(500).json({msj: error.message}).send("Ocurrió un error")
     }
 }
 
@@ -149,7 +149,7 @@ const update = async (req, res) => {
     } catch (error) {
         
         console.log("Error ", error)
-        res.status(500).json({msj: error})
+        res.status(500).json({msj: error.message}).send("Ocurrió un error")
     }
 
 };
@@ -167,7 +167,7 @@ const deleteById = async(req, res) => {
         res.status(200).json(response)
     } catch (error) {
         console.log("Error", error)
-        res.status(404).send(error.message)
+        res.status(404).json({msj: error.message}).send("Ocurrió un error")
     }
 };
 
