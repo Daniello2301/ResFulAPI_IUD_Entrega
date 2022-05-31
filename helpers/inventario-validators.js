@@ -1,7 +1,6 @@
+const inventarioValidator = (req) => {
 
-const validarInventario = (req) => {
-
-    const validaciones = [];
+    const validations = [];
 
     if(!req.body.serial){
         validaciones.push('El serial es requerido');
@@ -37,7 +36,7 @@ const validarInventario = (req) => {
         validaciones.push('El tipo del equipo es requerido');
     }
 
-    return validaciones;
+    return validations;
 }
 
-module.exports = { validarInventario };
+module.exports = {inventarioValidator}

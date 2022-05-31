@@ -3,8 +3,8 @@ const Marca = require('../models/Marca');
 const EstadoEquipo = require('../models/EstadoEquipo');
 const TipoEquipo = require('../models/TipoEquipo');
 const Usuario = require('../models/Usuario');
+const { inventarioValidator  } = require('../helpers/inventario-validators')
 
-const { validarInventario }  = require('../helpers/inventario-validate')
 
 
 // listar todos los inventarios
@@ -100,22 +100,28 @@ const getStateActive = async ( req, res ) => {
     }
 };
 
+
+// Metodo crear inventario
 const create = async ( req, res ) => {
 
     try 
     {
         console.log("POST/inventarios")
         console.log(req.body)
+
         
 
-        // Validaciones 
-        const validaciones = validarInventario(req);
+        /* ***************** Validaciones ****************************** */
 
-        if(validaciones.length > 0){
-            return res.status(500).send(validaciones);
+        const validations  = inventarioValidator(req);
+
+        if(validations.length > 0){
+
+            return res.status(500).send(validations);
+
         }
 
-        // Request
+        /* ***********************Setedo de la informacion ****************** */
         const serial = req.body.serial;
         const modelo = req.body.descricion;
         const descripcion = req.body.descripcion;
@@ -168,15 +174,17 @@ const create = async ( req, res ) => {
     }
 }; 
 
+
+// Actualizar inventario
 const update = async ( req , res ) => {
 
     try 
     {
         // Validaciones 
-        const validaciones = validarInventario(req);
+        const validations = inventarioValidator(req);
 
-        if(validaciones.length > 0){
-            return res.status(500).send(validaciones);
+        if(validations.length > 0){
+            return res.status(500).send(validations);
         }
         
         console.log("PUT/inventarios/",req.params.id)
