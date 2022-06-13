@@ -2,6 +2,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const dotenv = require('dotenv').config();
+const cors = require('cors');
+
 
 // Importamos coneccion a mongoDb
 const connectionDB = require('./database/database-config')
@@ -17,6 +19,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(methodOverride())
+app.use(cors())
+
 
 // creamos port 
 const port = process.env.PORT || 5000
